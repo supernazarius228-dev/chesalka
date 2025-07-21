@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Чесалка Яйц™ 2.0</title>
+  <style>
+    body {
+      font-family: Comic Sans MS, cursive, sans-serif;
+      background: #ffeaa7;
+      text-align: center;
+      padding-top: 50px;
+    }
+    button {
+      font-size: 24px;
+      padding: 15px 30px;
+      margin: 10px;
+      background: #fd79a8;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #e84393;
+    }
+    #output {
+      margin-top: 20px;
+      font-size: 20px;
+    }
+    #stats {
+      margin-top: 15px;
+      font-size: 18px;
+    }
+    .store {
+      margin-top: 30px;
+      background: #fab1a0;
+      padding: 20px;
+      border-radius: 12px;
+      display: inline-block;
+    }
+    .store h2 {
+      margin-bottom: 10px;
+    }
+    .store button {
+      display: block;
+      margin: 8px auto;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Супер Чесалка Яйц™ 2.0 🥚</h1>
+  <button onclick="chesat()">Почесать!</button>
+  <div id="output">Добро пожаловать!</div>
+  <div id="stats">
+    Почесано: <span id="count">0</span><br />
+    За клик: <span id="perClick">1</span><br />
+    Пассивно в секунду: <span id="passive">0</span>
+  </div>
+
+  <div class="store">
+    <h2>🛒 Улучшения</h2>
+    <button onclick="buyUpgrade()">💪 Увеличить за клик (10 монет)</button>
+    <button onclick="buyPassive()">💼 Нанять чесальщика (25 монет)</button>
+  </div>
+
+  <script>
+    let count = 0;
+    let perClick = 1;
+    let passiveIncome = 0;
+
+    // Загружаем сохранение
+    window.onload = () => {
+      if (localStorage.getItem("chesalkaSave")) {
+        let save = JSON.parse(localStorage.getItem("chesalkaSave"));
+        count = save.count || 0;
+        perClick = save.perClick || 1;
+        passiveIncome = save.passiveIncome || 0;
+        updateUI();
+      }
+    };
+
+    function chesat() {
+      count += perClick;
+      showMessage();
+      updateUI();
+      saveGame();
+    }
+
+    function buyUpgrade() {
+      if (count >= 10) {
+        count -= 10;
+        perClick += 1;
+        updateUI();
+        saveGame();
+      } else {
+        alert("Недостаточно 'Почесано' для улучшения за клик!");
+      }
+    }
+
+    function buyPassive() {
+      if (count >= 25) {
+        count -= 25;
+        passiveIncome += 1;
+        updateUI();
+        saveGame();
+      } else {
+        alert("Недостаточно 'Почесано' для найма чесальщика!");
+      }
+    }
+
+    function updateUI() {
+      document.getElementById("count").textContent = count;
+      document.getElementById("perClick").textContent = perClick;
+      document.getElementById("passive").textContent = passiveIncome;
+    }
+
+    function saveGame() {
+      const save = {
+        count: count,
+        perClick: perClick,
+        passiveIncome: passiveIncome
+      };
+      localStorage.setItem("chesalkaSave", JSON.stringify(save));
+    }
+
+    function showMessage() {
+      const messages = [
+        "Почесано мягонько!",
+        "Ещё одно яйцо довольное 😏",
+        "Ты профи чесания!",
+        "Чешется, и не спрашивай почему...",
+        "Чесалка 3000 в действии!"
+      ];
+      const msg = messages[Math.floor(Math.random() * messages.length)];
+      document.getElementById("output").textContent = msg;
+    }
+
+    // Пассивный доход каждую секунду
+    setInterval(() => {
+      if (passiveIncome > 0) {
+        count += passiveIncome;
+        updateUI();
+        saveGame();
+      }
+    }, 1000);
+  </script>
+</body>
+</html>
